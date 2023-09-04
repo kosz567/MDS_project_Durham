@@ -25,7 +25,7 @@ y_percentage = (y / y.sum()) * 100
 print(X_percentage)
 print(y_percentage)
 
-"""Here  am performing a linear regression on the categories for moral sentiment for labour and conservative Mps using the predicted labels from the DistiBERT model."""
+"""Here i am performing a linear regression on the categories for moral sentiment for labour and conservative Mps using the predicted labels from the DistiBERT model."""
 
 import numpy as np
 import statsmodels.api as sm
