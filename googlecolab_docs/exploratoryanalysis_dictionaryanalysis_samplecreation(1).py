@@ -848,9 +848,10 @@ df = pd.read_csv('references.csv')
 
 df.head()
 
-"""This next section performs the exploratory topic modelling using the two techniques LDA and NMF."""
+"""This next section performs the exploratory topic modelling using NMF."""
 
-#justifying why topic modelling is needed to understand what is being discussed beyond just what is contained in the agenda's for each reference.
+# topic modelling is needed to understand what is being discussed beyond just what is contained in the agenda's for each reference.
+#calculating the % of agenda labels that contain certain words.
 china_percentage = df['agenda'].str.contains('China', case=False).mean() * 100
 print(f"Percentage of rows containing the word 'China': {china_percentage:.2f}%")
 hong_kong_percentage = df['agenda'].str.contains('Hong Kong', case=False).mean() * 100
