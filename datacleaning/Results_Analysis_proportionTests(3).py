@@ -46,7 +46,7 @@ mps_to_filter = [
 filtered_df = df3[df3['speaker2'].isin(mps_to_filter)]
 
 # filtering for references said by foreign secretaries based of off the year that they they were foreign secretary in
-#list of foreign secretarie tenures was gained using wikipedia.
+#Dictionary of foreign secretaries and their tenures which was gained using wikipedia.
 foreign_secretary_tenures = {
     'James Cleverly': (2022, 2023),
     'Elizabeth Truss': (2021, 2022),
