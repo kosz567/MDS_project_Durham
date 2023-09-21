@@ -65,19 +65,18 @@ foreign_secretary_tenures = {
     'Geoffrey Howe': (1983, 1989)
 }
 
-filtered_sentences_df1 = pd.DataFrame()
+filtered_ref_df1 = pd.DataFrame()
 
 # This block of code iterates over each of the foriegn secretaries based on their year range.  
 for mp, year_range in foreign_secretary_tenures.items():
     start_year, end_year = year_range[0], year_range[1]
-    mp_sentences = filtered_df[(filtered_df['speaker2'] == mp) & (filtered_df['Year'] >= start_year) & (filtered_df['Year'] <= end_year)]
-    filtered_sentences_df1 = pd.concat([filtered_sentences_df1, mp_sentences])
+    mp_ref = filtered_df[(filtered_df['speaker2'] == mp) & (filtered_df['Year'] >= start_year) & (filtered_df['Year'] <= end_year)]
+    filtered_ref_df1 = pd.concat([filtered_ref_df1, mp_ref])
 
-#counting the references per foreign secretaries (it should be references not sentences in the name - however I have carried this typo 
-#through all the code in this section, hence it remains).
-sentences_per_foreign_secretary = filtered_sentences_df1.groupby('speaker2').size().reset_index(name='Number_of_references')
+#counting the references per foreign secretaries.
+ref_per_foreign_secretary = filtered_ref_df1.groupby('speaker2').size().reset_index(name='Number_of_references')
 
-filtered_sentences_df1.head()
+filtered_ref_df1.head()
 
 
 # NOTE: much of the following code is essentially, the same initial block of code repeated again and again to calculate proportions for different models for both moral sentiment and moral foundations. So, the dataframe names change, the names of the columns and the labels themsevles namely either 0,1,2 or 0,1,4,6 but the structure of the code is identicial.
@@ -102,10 +101,10 @@ proportions_labour = {}
 
 for foundation in [0, 1, 4, 6]:
     foundation_texts_all = df2[df2['predicted_labels'] == foundation]
-    foundation_texts_fs = filtered_sentences_df1[filtered_sentences_df1['predicted_labels'] == foundation]
+    foundation_texts_fs = filtered_ref_df1[filtered_ref_df1['predicted_labels'] == foundation]
 
     proportion_con = len(foundation_texts_all) / len(df2) if len(df2) > 0 else 0.0
-    proportion_lab = len(foundation_texts_fs) / len(filtered_sentences_df1) if len(filtered_sentences_df1) > 0 else 0.0
+    proportion_lab = len(foundation_texts_fs) / len(filtered_ref_df1) if len(filtered_ref_df1) > 0 else 0.0
 
     proportions_conservative[foundation] = proportion_con
     proportions_labour[foundation] = proportion_lab
@@ -120,7 +119,7 @@ for foundation in [0, 1, 4, 6]:
 
     #these lines of code are used to calculate the upper and lower bounds for 95% confident intervales
     se_con = np.sqrt(proportions_conservative[foundation] * (1 - proportions_conservative[foundation]) / len(df3))
-    se_lab = np.sqrt(proportions_labour[foundation] * (1 - proportions_labour[foundation]) / len(filtered_sentences_df1))
+    se_lab = np.sqrt(proportions_labour[foundation] * (1 - proportions_labour[foundation]) / len(filtered_ref_df1))
 
     ci_con = (proportions_conservative[foundation] - 1.96 * se_con, proportions_conservative[foundation] + 1.96 * se_con)
     ci_lab = (proportions_labour[foundation] - 1.96 * se_lab, proportions_labour[foundation] + 1.96 * se_lab)
@@ -131,7 +130,7 @@ for foundation in [0, 1, 4, 6]:
 #this code is calculating the pooled proportions and the z-scores, and then finally the p-values.
     p1 = proportions_labour[foundation]
     p2 = proportions_conservative[foundation]
-    n1 = len(filtered_sentences_df1)
+    n1 = len(filtered_ref_df1)
     n2 = len(df2)
 
     pooled_proportion = (p1 * n1 + p2 * n2) / (n1 + n2)
@@ -170,10 +169,10 @@ proportions_labour = {}
 
 for foundation in [0, 1, 4, 6]:
     foundation_texts_all = df2[df2['recoded'] == foundation]
-    foundation_texts_fs = filtered_sentences_df1[filtered_sentences_df1['recoded'] == foundation]
+    foundation_texts_fs = filtered_ref_df1[filtered_ref_df1['recoded'] == foundation]
 
     proportion_con = len(foundation_texts_all) / len(df2) if len(df2) > 0 else 0.0
-    proportion_lab = len(foundation_texts_fs) / len(filtered_sentences_df1) if len(filtered_sentences_df1) > 0 else 0.0
+    proportion_lab = len(foundation_texts_fs) / len(filtered_ref_df1) if len(filtered_ref_df1) > 0 else 0.0
 
     proportions_conservative[foundation] = proportion_con
     proportions_labour[foundation] = proportion_lab
@@ -188,7 +187,7 @@ for foundation in [0, 1, 4, 6]:
     
  #these lines of code are used to calculate the upper and lower bounds for 95% confident intervales
     se_con = np.sqrt(proportions_conservative[foundation] * (1 - proportions_conservative[foundation]) / len(df3))
-    se_lab = np.sqrt(proportions_labour[foundation] * (1 - proportions_labour[foundation]) / len(filtered_sentences_df1))
+    se_lab = np.sqrt(proportions_labour[foundation] * (1 - proportions_labour[foundation]) / len(filtered_ref_df1))
 
     ci_con = (proportions_conservative[foundation] - 1.96 * se_con, proportions_conservative[foundation] + 1.96 * se_con)
     ci_lab = (proportions_labour[foundation] - 1.96 * se_lab, proportions_labour[foundation] + 1.96 * se_lab)
@@ -199,7 +198,7 @@ for foundation in [0, 1, 4, 6]:
 #this code is setting the calculating for the pooled proportions and the z-scores, and then finally the p-values.
     p1 = proportions_labour[foundation]
     p2 = proportions_conservative[foundation]
-    n1 = len(filtered_sentences_df1)
+    n1 = len(filtered_ref_df1)
     n2 = len(df2)
 
     pooled_proportion = (p1 * n1 + p2 * n2) / (n1 + n2)
@@ -237,10 +236,10 @@ proportions_labour = {}
 
 for foundation in [0, 1, 4, 6]:
     foundation_texts_all = df3[df3['moral_embeddings2'] == foundation]
-    foundation_texts_fs = filtered_sentences_df1[filtered_sentences_df1['moral_embeddings2'] == foundation]
+    foundation_texts_fs = filtered_ref_df1[filtered_ref_df1['moral_embeddings2'] == foundation]
 
     proportion_con = len(foundation_texts_all) / len(df3) if len(df3) > 0 else 0.0
-    proportion_lab = len(foundation_texts_fs) / len(filtered_sentences_df1) if len(filtered_sentences_df1) > 0 else 0.0
+    proportion_lab = len(foundation_texts_fs) / len(filtered_ref_df1) if len(filtered_ref_df1) > 0 else 0.0
 
     proportions_conservative[foundation] = proportion_con
     proportions_labour[foundation] = proportion_lab
@@ -255,7 +254,7 @@ for foundation in [0, 1, 4, 6]:
 
     #these lines of code are used to calculate the upper and lower bounds for 95% confident intervales
     se_con = np.sqrt(proportions_conservative[foundation] * (1 - proportions_conservative[foundation]) / len(df3))
-    se_lab = np.sqrt(proportions_labour[foundation] * (1 - proportions_labour[foundation]) / len(filtered_sentences_df1))
+    se_lab = np.sqrt(proportions_labour[foundation] * (1 - proportions_labour[foundation]) / len(filtered_ref_df1))
 
     ci_con = (proportions_conservative[foundation] - 1.96 * se_con, proportions_conservative[foundation] + 1.96 * se_con)
     ci_lab = (proportions_labour[foundation] - 1.96 * se_lab, proportions_labour[foundation] + 1.96 * se_lab)
@@ -266,7 +265,7 @@ for foundation in [0, 1, 4, 6]:
 #this code is setting the calculating for the pooled proportions and the z-scores, and then finally the p-values.
     p1 = proportions_labour[foundation]
     p2 = proportions_conservative[foundation]
-    n1 = len(filtered_sentences_df1)
+    n1 = len(filtered_ref_df1)
     n2 = len(df3)
 
     pooled_proportion = (p1 * n1 + p2 * n2) / (n1 + n2)
@@ -298,14 +297,14 @@ for foundation in [0, 1, 4, 6]:
 #Here I am calculating the proportions of each category in the moral embeddings column for the word2vec model 
 proportions = len(df3['moral_embeddings'])
 
-proportions2 = len(filtered_sentences_df1['moral_embeddings'])
+proportions2 = len(filtered_ref_df1['moral_embeddings'])
 
 proportions_conservative = {0: 0.0, 1: 0.0, 2: 0.0}
 proportions_labour = {0: 0.0, 1: 0.0, 2: 0.0}
 
 for foundation in [0, 1, 2]:
     foundation_texts_all = df3[(df3['moral_embeddings'] ==foundation)]
-    foundation_texts_fs = filtered_sentences_df1[(filtered_sentences_df1['moral_embeddings'] == foundation)]
+    foundation_texts_fs = filtered_ref_df1[(filtered_ref_df1['moral_embeddings'] == foundation)]
 
     proportion_con = len(foundation_texts_all) / proportions if proportions > 0 else 0.0
     proportion_lab = len(foundation_texts_fs) / proportions2 if proportions2 > 0 else 0.0
@@ -374,14 +373,14 @@ for foundation in [0, 1, 2]:
 #Here I am calculating the proportions of each category in the moral sentiment column for the dictionary model 
 proportions = len(df2['moral_sentiment'])
 
-proportions2 = len(filtered_sentences_df1['moral_sentiment'])
+proportions2 = len(filtered_ref_df1['moral_sentiment'])
 
 proportions_conservative = {0: 0.0, 1: 0.0, 2: 0.0}
 proportions_labour = {0: 0.0, 1: 0.0, 2: 0.0}
 
 for foundation in [0, 1, 2]:
     foundation_texts_all = df2[(df2['moral_sentiment'] ==foundation)]
-    foundation_texts_fs = filtered_sentences_df1[(filtered_sentences_df1['moral_sentiment'] == foundation)]
+    foundation_texts_fs = filtered_ref_df1[(filtered_ref_df1['moral_sentiment'] == foundation)]
 
     proportion_con = len(foundation_texts_all) / proportions if proportions > 0 else 0.0
     proportion_lab = len(foundation_texts_fs) / proportions2 if proportions2 > 0 else 0.0
@@ -448,14 +447,14 @@ for foundation in [0, 1, 2]:
 # here I am calculating the proportions of each category in the 'predicted_label2' column for moral sentiment
 proportions = len(df2['predicted_labels2'])
 
-proportions2 = len(filtered_sentences_df1['predicted_labels2'])
+proportions2 = len(filtered_ref_df1['predicted_labels2'])
 
 proportions_conservative = {0: 0.0, 1: 0.0, 2: 0.0}
 proportions_labour = {0: 0.0, 1: 0.0, 2: 0.0}
 
 for foundation in [0, 1, 2]:
     foundation_texts_all = df2[(df2['predicted_labels2'] ==foundation)]
-    foundation_texts_fs = filtered_sentences_df1[(filtered_sentences_df1['predicted_labels2'] == foundation)]
+    foundation_texts_fs = filtered_ref_df1[(filtered_ref_df1['predicted_labels2'] == foundation)]
 
     proportion_con = len(foundation_texts_all) / proportions if proportions > 0 else 0.0
     proportion_lab = len(foundation_texts_fs) / proportions2 if proportions2 > 0 else 0.0
@@ -521,15 +520,15 @@ for foundation in [0, 1, 2]:
 ##THIS CODE IS FOR COMPARING LABOUR AND CONSERVATIVE FORIEGN SECRETARIES FOR THE WORD2VEC MODEL FOR MORAL SENTIMENT CATEGORIES
 
 # Calculate the total number of texts for conservative and labour fs
-total_texts_con = len(filtered_sentences_df1[filtered_sentences_df1['party2'] == 'Con'])
-total_texts_lab = len(filtered_sentences_df1[filtered_sentences_df1['party2'] == 'Lab'])
+total_texts_con = len(filtered_ref_df1[filtered_ref_df1['party2'] == 'Con'])
+total_texts_lab = len(filtered_ref_df1[filtered_ref_df1['party2'] == 'Lab'])
 
 proportions_conservative = {0: 0.0, 1: 0.0, 2: 0.0}
 proportions_labour = {0: 0.0, 1: 0.0, 2: 0.0}
 
 for foundation in [0, 1, 2]:
-    foundation_texts_con = filtered_sentences_df1[(filtered_sentences_df1['moral_embeddings'] == foundation) & (filtered_sentences_df1['party2'] == 'Con')]
-    foundation_texts_lab = filtered_sentences_df1[(filtered_sentences_df1['moral_embeddings'] == foundation) & (filtered_sentences_df1['party2'] == 'Lab')]
+    foundation_texts_con = filtered_ref_df1[(filtered_ref_df1['moral_embeddings'] == foundation) & (filtered_ref_df1['party2'] == 'Con')]
+    foundation_texts_lab = filtered_ref_df1[(filtered_ref_df1['moral_embeddings'] == foundation) & (filtered_ref_df1['party2'] == 'Lab')]
 
     proportion_con = len(foundation_texts_con) / total_texts_con if total_texts_con > 0 else 0.0
     proportion_lab = len(foundation_texts_lab) / total_texts_lab if total_texts_lab > 0 else 0.0
@@ -597,15 +596,15 @@ for foundation in [0, 1, 2]:
 ##THIS CODE IS FOR COMPARING LABOUR AND CONSERVATIVE FORIEGN SECRETARIES FOR THE CUSTOMISED DIC MODEL FOR MORAL SENTIMENT CATEGORIES
 
 # Here I am calculating the total number of texts for conservative and labour fs
-total_texts_con = len(filtered_sentences_df1[filtered_sentences_df1['party2'] == 'Con'])
-total_texts_lab = len(filtered_sentences_df1[filtered_sentences_df1['party2'] == 'Lab'])
+total_texts_con = len(filtered_ref_df1[filtered_ref_df1['party2'] == 'Con'])
+total_texts_lab = len(filtered_ref_df1[filtered_ref_df1['party2'] == 'Lab'])
 
 proportions_conservative = {0: 0.0, 1: 0.0, 2: 0.0}
 proportions_labour = {0: 0.0, 1: 0.0, 2: 0.0}
 
 for foundation in [0, 1, 2]:
-    foundation_texts_con = filtered_sentences_df1[(filtered_sentences_df1['moral_sentiment'] == foundation) & (filtered_sentences_df1['party2'] == 'Con')]
-    foundation_texts_lab = filtered_sentences_df1[(filtered_sentences_df1['moral_sentiment'] == foundation) & (filtered_sentences_df1['party2'] == 'Lab')]
+    foundation_texts_con = filtered_ref_df1[(filtered_ref_df1['moral_sentiment'] == foundation) & (filtered_ref_df1['party2'] == 'Con')]
+    foundation_texts_lab = filtered_ref_df1[(filtered_ref_df1['moral_sentiment'] == foundation) & (filtered_ref_df1['party2'] == 'Lab')]
 
     proportion_con = len(foundation_texts_con) / total_texts_con if total_texts_con > 0 else 0.0
     proportion_lab = len(foundation_texts_lab) / total_texts_lab if total_texts_lab > 0 else 0.0
@@ -672,15 +671,15 @@ for foundation in [0, 1, 2]:
 ##THIS CODE IS FOR COMPARING LABOUR AND CONSERVATIVE FORIEGN SECRETARIES FOR THE BERT MODEL FOR MORAL SENTIMENT CATEGORIES
 
 # here i am finding out the total number of texts for conservative and labour fs
-total_texts_con = len(filtered_sentences_df1[filtered_sentences_df1['party2'] == 'Con'])
-total_texts_lab = len(filtered_sentences_df1[filtered_sentences_df1['party2'] == 'Lab'])
+total_texts_con = len(filtered_ref_df1[filtered_ref_df1['party2'] == 'Con'])
+total_texts_lab = len(filtered_ref_df1[filtered_ref_df1['party2'] == 'Lab'])
 
 proportions_conservative = {0: 0.0, 1: 0.0, 2: 0.0}
 proportions_labour = {0: 0.0, 1: 0.0, 2: 0.0}
 
 for foundation in [0, 1, 2]:
-    foundation_texts_con = filtered_sentences_df1[(filtered_sentences_df1['predicted_labels2'] == foundation) & (filtered_sentences_df1['party2'] == 'Con')]
-    foundation_texts_lab = filtered_sentences_df1[(filtered_sentences_df1['predicted_labels2'] == foundation) & (filtered_sentences_df1['party2'] == 'Lab')]
+    foundation_texts_con = filtered_ref_df1[(filtered_ref_df1['predicted_labels2'] == foundation) & (filtered_ref_df1['party2'] == 'Con')]
+    foundation_texts_lab = filtered_ref_df1[(filtered_ref_df1['predicted_labels2'] == foundation) & (filtered_ref_df1['party2'] == 'Lab')]
 
     proportion_con = len(foundation_texts_con) / total_texts_con if total_texts_con > 0 else 0.0
     proportion_lab = len(foundation_texts_lab) / total_texts_lab if total_texts_lab > 0 else 0.0
@@ -747,15 +746,15 @@ for foundation in [0, 1, 2]:
 ##THIS CODE IS FOR COMPARING LABOUR AND CONSERVATIVE FORIEGN SECRETARIES FOR THE BERT MODEL FOR MORAL FOUNDATION CATEGORIES
 
 # Here I am findong the total number of texts for conservative and labour fs
-total_texts_con = len(filtered_sentences_df1[filtered_sentences_df1['party2'] == 'Con'])
-total_texts_lab = len(filtered_sentences_df1[filtered_sentences_df1['party2'] == 'Lab'])
+total_texts_con = len(filtered_ref_df1[filtered_ref_df1['party2'] == 'Con'])
+total_texts_lab = len(filtered_ref_df1[filtered_ref_df1['party2'] == 'Lab'])
 
 proportions_conservative = { }
 proportions_labour = { }
 
 for foundation in [0, 1, 4, 6]:
-    foundation_texts_con = filtered_sentences_df1[(filtered_sentences_df1['predicted_labels'] == foundation) & (filtered_sentences_df1['party2'] == 'Con')]
-    foundation_texts_lab = filtered_sentences_df1[(filtered_sentences_df1['predicted_labels'] == foundation) & (filtered_sentences_df1['party2'] == 'Lab')]
+    foundation_texts_con = filtered_ref_df1[(filtered_ref_df1['predicted_labels'] == foundation) & (filtered_ref_df1['party2'] == 'Con')]
+    foundation_texts_lab = filtered_ref_df1[(filtered_ref_df1['predicted_labels'] == foundation) & (filtered_ref_df1['party2'] == 'Lab')]
 
     proportion_con = len(foundation_texts_con) / total_texts_con if total_texts_con > 0 else 0.0
     proportion_lab = len(foundation_texts_lab) / total_texts_lab if total_texts_lab > 0 else 0.0
@@ -815,18 +814,18 @@ for foundation in [0, 1, 4, 6]:
 # In[47]:
 
 
-##THIS CODE IS FOR COMPARING LABOUR AND CONSERVATIVE FORIEGN SECRETARIES FOR THE Dictionary MODEL FOR MORAL FOUNDATION CATEGORIES
+##THIS CODE IS FOR COMPARING LABOUR AND CONSERVATIVE FORIEGN SECRETARIES FOR THE DICTIONARY MODEL FOR MORAL FOUNDATION CATEGORIES
 
 # Here I am finding out the total number of texts for conservative and labour for. secs.
-total_texts_con = len(filtered_sentences_df1[filtered_sentences_df1['party2'] == 'Con'])
-total_texts_lab = len(filtered_sentences_df1[filtered_sentences_df1['party2'] == 'Lab'])
+total_texts_con = len(filtered_ref_df1[filtered_ref_df1['party2'] == 'Con'])
+total_texts_lab = len(filtered_ref_df1[filtered_ref_df1['party2'] == 'Lab'])
 
 proportions_conservative = { }
 proportions_labour = { }
 
 for foundation in [0, 1, 4, 6]:
-    foundation_texts_con = filtered_sentences_df1[(filtered_sentences_df1['recoded'] == foundation) & (filtered_sentences_df1['party2'] == 'Con')]
-    foundation_texts_lab = filtered_sentences_df1[(filtered_sentences_df1['recoded'] == foundation) & (filtered_sentences_df1['party2'] == 'Lab')]
+    foundation_texts_con = filtered_ref_df1[(filtered_ref_df1['recoded'] == foundation) & (filtered_ref_df1['party2'] == 'Con')]
+    foundation_texts_lab = filtered_ref_df1[(filtered_ref_df1['recoded'] == foundation) & (filtered_ref_df1['party2'] == 'Lab')]
 
     proportion_con = len(foundation_texts_con) / total_texts_con if total_texts_con > 0 else 0.0
     proportion_lab = len(foundation_texts_lab) / total_texts_lab if total_texts_lab > 0 else 0.0
@@ -890,15 +889,15 @@ for foundation in [0, 1, 4, 6]:
 #THIS CODE IS FOR COMPARING LABOUR AND CONSERVATIVE FORIEGN SECRETARIES FOR THE WORD2VEC MODEL FOR MORAL FOUNDATION CATEGORIES
 
 # Here I am finding the total number of texts for conservative and labour for secs.
-total_texts_con = len(filtered_sentences_df1[filtered_sentences_df1['party2'] == 'Con'])
-total_texts_lab = len(filtered_sentences_df1[filtered_sentences_df1['party2'] == 'Lab'])
+total_texts_con = len(filtered_ref_df1[filtered_ref_df1['party2'] == 'Con'])
+total_texts_lab = len(filtered_ref_df1[filtered_ref_df1['party2'] == 'Lab'])
 
 proportions_conservative = { }
 proportions_labour = { }
 
 for foundation in [0, 1, 4, 6]:
-    foundation_texts_con = filtered_sentences_df1[(filtered_sentences_df1['moral_embeddings2'] == foundation) & (filtered_sentences_df1['party2'] == 'Con')]
-    foundation_texts_lab = filtered_sentences_df1[(filtered_sentences_df1['moral_embeddings2'] == foundation) & (filtered_sentences_df1['party2'] == 'Lab')]
+    foundation_texts_con = filtered_ref_df1[(filtered_ref_df1['moral_embeddings2'] == foundation) & (filtered_ref_df1['party2'] == 'Con')]
+    foundation_texts_lab = filtered_ref_df1[(filtered_ref_df1['moral_embeddings2'] == foundation) & (filtered_ref_df1['party2'] == 'Lab')]
 
     proportion_con = len(foundation_texts_con) / total_texts_con if total_texts_con > 0 else 0.0
     proportion_lab = len(foundation_texts_lab) / total_texts_lab if total_texts_lab > 0 else 0.0
@@ -1034,7 +1033,7 @@ for foundation in [0, 1, 2]:
 # In[51]:
 
 
-#CODE FOR COMPARING lAB AND CON MPS ACROSS THE FULL DATASET FOR MORAL SENTIMENT FOR THE dictionary MODEL 
+#CODE FOR COMPARING lAB AND CON MPS ACROSS THE FULL DATASET FOR MORAL SENTIMENT FOR THE DICTIONARY MODEL 
 
 # Here I am calculating the total number of texts for conservative and labour MPs
 total_texts_con = len(df2[df2['party2'] == 'Con'])
@@ -1108,7 +1107,7 @@ for foundation in [0, 1, 2]:
 # In[53]:
 
 
-#CODE FOR COMPARING lAB AND CON MPS ACROSS THE FULL DATASET FOR MORAL SENTIMENT FOR THE word2vec MODEL 
+#CODE FOR COMPARING lAB AND CON MPS ACROSS THE FULL DATASET FOR MORAL SENTIMENT FOR THE WORD2VEC MODEL 
 
 # Here I am calculating the total number of texts for conservative and labour MPs
 total_texts_con = len(df2[df2['party2'] == 'Con'])
@@ -1181,7 +1180,7 @@ for foundation in [0, 1, 2]:
 # In[13]:
 
 
-#CODE FOR COMPARING LAB AND CON MPS ACROSS THE FULL DATASET FOR MORAL FOUNDATION FOR THE BERT MODEL
+#CODE FOR COMPARING LAB AND CON MPS ACROSS THE FULL DATASET FOR MORAL FOUNDATIONS FOR THE BERT MODEL
 
 # Here I am calculating the total number of texts for conservative and labour MPs
 total_texts_con = len(df2[df2['party2'] == 'Con'])
@@ -1255,7 +1254,7 @@ for foundation in [0, 1, 4, 6]:
 # In[54]:
 
 
-#CODE FOR COMPARING LAB AND CON MPS ACROSS THE FULL DATASET FOR MORAL foundations FOR THE dictionary MODEL
+#CODE FOR COMPARING LAB AND CON MPS ACROSS THE FULL DATASET FOR MORAL FOUNDATIONS FOR THE DICTIONARY MODEL
 
 # Here i am calculating the total number of texts for conservative and labour MPs
 total_texts_con = len(df2[df2['party2'] == 'Con'])
@@ -1329,7 +1328,7 @@ for foundation in [0, 1, 4, 6]:
 # In[55]:
 
 
-#CODE FOR COMPARING LAB AND CON MPS ACROSS THE FULL DATASET FOR MORAL FOUNDATION FOR THE word2vec MODEL
+#CODE FOR COMPARING LAB AND CON MPS ACROSS THE FULL DATASET FOR MORAL FOUNDATION FOR THE WORD2VEC MODEL
 
 # Here I am calculating the total number of texts for conservative and labour MPs
 total_texts_con = len(df2[df2['party2'] == 'Con'])
@@ -1401,25 +1400,25 @@ for foundation in [0, 1, 4, 6]:
 
 
 # code below is for creating a bar chart for all foreign secs, all mps and lab and con foreign secrtaries for the word2vec modle to create the same bar chart but for different models change the dataframe name and the labels. 
-# #for DistilBERT moral sentiment change df3 to df2 and change moral embeddings to predicted_labels2
-# #for customised dicitonary model sentiment change df3 to df2 and change moral embedding to moral_sentiment
+# #for DistilBERT moral sentiment I change df3 to df2 and I change moral embeddings to predicted_labels2
+# #for customised dicitonary model sentiment I change df3 to df2 and I change moral embedding to moral_sentiment
 
 # In[59]:
 
 
-# Here I am finding the total number of referencnes in the DataFrame - using sentences is an error carried through from when I thought I might use sentences however the name of the variables does not impact the analysis.
-total_sentences = len(df3)
+# Here I am finding the total number of referencnes in the DataFrame.
+total_ref = len(df3)
 
 # Here I am finding the proportions of each moral sentiment categrory 
 proportions = df3['moral_embeddings'].value_counts(normalize=True).sort_index()
 
 # Here I am finding the proportions for Lab and Con separately
-lab_df = filtered_sentences_df1[filtered_sentences_df1['party2'] == 'Lab']
-con_df = filtered_sentences_df1[filtered_sentences_df1['party2'] == 'Con']
+lab_df = filtered_ref_df1[filtered_ref_df1['party2'] == 'Lab']
+con_df = filtered_ref_df1[filtered_ref_df1['party2'] == 'Con']
 
 proportions_lab = lab_df['moral_embeddings'].value_counts(normalize=True).sort_index()
 proportions_con = con_df['moral_embeddings'].value_counts(normalize=True).sort_index()
-proportions2 = filtered_sentences_df1['moral_embeddings'].value_counts(normalize=True).sort_index()
+proportions2 = filtered_ref_df1['moral_embeddings'].value_counts(normalize=True).sort_index()
 
 
 # This will plto the bar graph for all proportions
@@ -1444,18 +1443,18 @@ plt.show()
 
 import matplotlib.pyplot as plt
 # Here I am calcuating the total number of references in the DataFrame
-total_sentences = len(df2)
+total_ref = len(df2)
 
 # Here I am finding the proportions of each moral sentiment category
 proportions = df2['predicted_labels2'].value_counts(normalize=True).sort_index()
 
 # here i am finding the proportions for Lab and Con separately
-lab_df = filtered_sentences_df1[filtered_sentences_df1['party2'] == 'Lab']
-con_df = filtered_sentences_df1[filtered_sentences_df1['party2'] == 'Con']
+lab_df = filtered_ref_df1[filtered_ref_df1['party2'] == 'Lab']
+con_df = filtered_ref_df1[filtered_ref_df1['party2'] == 'Con']
 
 proportions_lab = lab_df['predicted_labels2'].value_counts(normalize=True).sort_index()
 proportions_con = con_df['predicted_labels2'].value_counts(normalize=True).sort_index()
-proportions2 = filtered_sentences_df1['predicted_labels2'].value_counts(normalize=True).sort_index()
+proportions2 = filtered_ref_df1['predicted_labels2'].value_counts(normalize=True).sort_index()
 
 
 # The follow section of code plots the the bar graph for all proportions
@@ -1478,18 +1477,18 @@ plt.tight_layout()
 plt.show()
 
 #This last bar graph for this section plots the proportions for moral sentiment for the customised dictionary 
-total_sentences = len(df2)
+total_ref = len(df2)
 
 #Here I am calculate the proportions of each moral sentiment category. 
 proportions = df2['moral_sentiment'].value_counts(normalize=True).sort_index()
 
 # Here I am calculating the proportions for Lab and Con separately
-lab_df = filtered_sentences_df1[filtered_sentences_df1['party2'] == 'Lab']
-con_df = filtered_sentences_df1[filtered_sentences_df1['party2'] == 'Con']
+lab_df = filtered_ref_df1[filtered_ref_df1['party2'] == 'Lab']
+con_df = filtered_ref_df1[filtered_ref_df1['party2'] == 'Con']
 
 proportions_lab = lab_df['moral_sentiment'].value_counts(normalize=True).sort_index()
 proportions_con = con_df['moral_sentiment'].value_counts(normalize=True).sort_index()
-proportions2 = filtered_sentences_df1['moral_sentiment'].value_counts(normalize=True).sort_index()
+proportions2 = filtered_ref_df1['moral_sentiment'].value_counts(normalize=True).sort_index()
 
 
 #The folowing code plots the bar graph - in the same manner as the previous two bar graphs.
@@ -1518,19 +1517,19 @@ plt.show()
 #code for the ploting the bar chart of the customised dictionary, bert and word2vec for moral foundations.
 
 import matplotlib.pyplot as plt
-# HEre I am calculating the total number of references in the dataframe
-total_sentences = len(df2)
+# Here I am calculating the total number of references in the dataframe
+total_ref = len(df2)
 
 # Here I am finding the proportions of each moral foundation category for the customised dictionary 
 proportions = df2['recoded'].value_counts(normalize=True).sort_index()
 
 # here I am calculating the proportions for Lab and Con separately
-lab_df = filtered_sentences_df1[filtered_sentences_df1['party2'] == 'Lab']
-con_df = filtered_sentences_df1[filtered_sentences_df1['party2'] == 'Con']
+lab_df = filtered_ref_df1[filtered_ref_df1['party2'] == 'Lab']
+con_df = filtered_ref_df1[filtered_ref_df1['party2'] == 'Con']
 
 proportions_lab = lab_df['recoded'].value_counts(normalize=True).sort_index()
 proportions_con = con_df['recoded'].value_counts(normalize=True).sort_index()
-proportions2 = filtered_sentences_df1['recoded'].value_counts(normalize=True).sort_index()
+proportions2 = filtered_ref_df1['recoded'].value_counts(normalize=True).sort_index()
 
 
 # This code plots the bar graph of proportions for each category. 
@@ -1556,12 +1555,12 @@ plt.show()
 proportions = df2['predicted_labels'].value_counts(normalize=True).sort_index()
 
 # here I am the proportions for Lab and Con separately
-lab_df = filtered_sentences_df1[filtered_sentences_df1['party2'] == 'Lab']
-con_df = filtered_sentences_df1[filtered_sentences_df1['party2'] == 'Con']
+lab_df = filtered_ref_df1[filtered_ref_df1['party2'] == 'Lab']
+con_df = filtered_ref_df1[filtered_ref_df1['party2'] == 'Con']
 
 proportions_lab = lab_df['predicted_labels'].value_counts(normalize=True).sort_index()
 proportions_con = con_df['predicted_labels'].value_counts(normalize=True).sort_index()
-proportions2 = filtered_sentences_df1['predicted_labels'].value_counts(normalize=True).sort_index()
+proportions2 = filtered_ref_df1['predicted_labels'].value_counts(normalize=True).sort_index()
 
 
 # This code plots the graph for the BERT model.
@@ -1585,12 +1584,12 @@ plt.show()
 
 proportions3 = df3['moral_embeddings2'].value_counts(normalize=True).sort_index()
 # Here Iam finding the proportions for Lab and Con separately
-lab_df = filtered_sentences_df1[filtered_sentences_df1['party2'] == 'Lab']
-con_df = filtered_sentences_df1[filtered_sentences_df1['party2'] == 'Con']
+lab_df = filtered_ref_df1[filtered_ref_df1['party2'] == 'Lab']
+con_df = filtered_ref_df1[filtered_ref_df1['party2'] == 'Con']
 
 proportions_lab = lab_df['moral_embeddings2'].value_counts(normalize=True).sort_index()
 proportions_con = con_df['moral_embeddings2'].value_counts(normalize=True).sort_index()
-proportions4 = filtered_sentences_df1['moral_embeddings2'].value_counts(normalize=True).sort_index()
+proportions4 = filtered_ref_df1['moral_embeddings2'].value_counts(normalize=True).sort_index()
 
 # As the word embedding model use a different dataframe this is calculated differently, and the 
 #labels for the bars need to be reassigned and indexed.
@@ -1980,12 +1979,12 @@ plt.show()
 
 for mp, year_range in foreign_secretary_tenures.items():
     start_year, end_year = year_range[0], year_range[1]
-    mp_sentences = filtered_df[(filtered_df['speaker2'] == mp) & (filtered_df['Year'] >= start_year) & (filtered_df['Year'] <= end_year)]
-    filtered_sentences_df1 = pd.concat([filtered_sentences_df1, mp_sentences])
+    mp_ref = filtered_df[(filtered_df['speaker2'] == mp) & (filtered_df['Year'] >= start_year) & (filtered_df['Year'] <= end_year)]
+    filtered_ref_df1 = pd.concat([filtered_ref_df1, mp_ref])
 
-sentences_per_foreign_secretary = filtered_sentences_df1.groupby('speaker2').size().reset_index(name='Number_of_references')
+ref_per_foreign_secretary = filtered_ref_df1.groupby('speaker2').size().reset_index(name='Number_of_references')
 
-grouped_by_speaker = filtered_sentences_df1.groupby('speaker2')
+grouped_by_speaker = filtered_ref_df1.groupby('speaker2')
 average_words_per_reference = grouped_by_speaker['Reference to China'].apply(lambda x: np.mean([len(reference.split()) for reference in x]))
 
 summary_df = pd.DataFrame({
@@ -1998,16 +1997,16 @@ print(summary_df)
 
 overall_average_words = average_words_per_reference.mean()
 print(f"Overall Average Words per Reference to China: {overall_average_words:.2f}")
-labour_subset = filtered_sentences_df1[filtered_sentences_df1['party2'] == 'Lab']
-conservative_subset = filtered_sentences_df1[filtered_sentences_df1['party2'] == 'Con']
+labour_subset = filtered_ref_df1[filtered_ref_df1['party2'] == 'Lab']
+conservative_subset = filtered_ref_df1[filtered_ref_df1['party2'] == 'Con']
 labour_average_words = labour_subset['Reference to China'].apply(lambda x: len(x.split())).mean()
 conservative_average_words = conservative_subset['Reference to China'].apply(lambda x: len(x.split())).mean()
 
 print(f"Average Words per Reference to China for Labour: {labour_average_words:.2f}")
 print(f"Average Words per Reference to China for Conservative: {conservative_average_words:.2f}")
 
-john_major_sentences = filtered_df[(filtered_df['speaker2'] == 'John Major') & (filtered_df['Year'] == 1989)]
-john_major_count = len(john_major_sentences)
+john_major_ref = filtered_df[(filtered_df['speaker2'] == 'John Major') & (filtered_df['Year'] == 1989)]
+john_major_count = len(john_major_ref)
 print("Number of sentences spoken by John Major in 1989:", john_major_count)
 
 
