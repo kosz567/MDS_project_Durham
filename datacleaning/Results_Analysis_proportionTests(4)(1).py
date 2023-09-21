@@ -462,7 +462,7 @@ for foundation in [0, 1, 2]:
     proportions_conservative[foundation] = proportion_con
     proportions_labour[foundation] = proportion_lab
 
-# This code compute the proportions and confidence intervals for each moral sent categroy 
+# This code computes the proportions and confidence intervals for each moral sentiment category 
 for foundation in [0, 1, 2]:
     print(f"Moral Foundation {foundation}")
     print(f"Proportion of All MPs Texts: {proportions_conservative[foundation]}")
@@ -1328,7 +1328,7 @@ for foundation in [0, 1, 4, 6]:
 # In[55]:
 
 
-#CODE FOR COMPARING LAB AND CON MPS ACROSS THE FULL DATASET FOR MORAL FOUNDATION FOR THE WORD2VEC MODEL
+#CODE FOR COMPARING LAB AND CON MPS ACROSS THE FULL DATASET FOR MORAL FOUNDATIONS FOR THE WORD2VEC MODEL
 
 # Here I am calculating the total number of texts for conservative and labour MPs
 total_texts_con = len(df2[df2['party2'] == 'Con'])
@@ -1369,7 +1369,7 @@ for foundation in [0, 1, 4,6]:
 # Setting the significance level
 alpha = 0.05
 
-# Here I am performing the z-test for proportions for each moral sent caterory
+# Here I am performing the z-test for proportions for each moral sent category
 for foundation in [0, 1, 4, 6]:
     p1 = proportions_labour[foundation]
     p2 = proportions_conservative[foundation]
@@ -1409,7 +1409,7 @@ for foundation in [0, 1, 4, 6]:
 # Here I am finding the total number of referencnes in the DataFrame.
 total_ref = len(df3)
 
-# Here I am finding the proportions of each moral sentiment categrory 
+# Here I am finding the proportions of each moral sentiment category 
 proportions = df3['moral_embeddings'].value_counts(normalize=True).sort_index()
 
 # Here I am finding the proportions for Lab and Con separately
@@ -1421,7 +1421,7 @@ proportions_con = con_df['moral_embeddings'].value_counts(normalize=True).sort_i
 proportions2 = filtered_ref_df1['moral_embeddings'].value_counts(normalize=True).sort_index()
 
 
-# This will plto the bar graph for all proportions
+# This will plot the bar graph for all proportions
 plt.figure(figsize=(12, 6))
 
 x = np.arange(len(proportions.index))
@@ -1650,7 +1650,7 @@ for foundation in [0, 1, 2]:
 
 relevant_columns = ['recoded', 'party2']
 
-#Herw I am creating the labels for the bars of the graph
+#Here I am creating the labels for the bars of the graph
 foundation_labels = {
     0: 'non moral',
     1: 'postive',
